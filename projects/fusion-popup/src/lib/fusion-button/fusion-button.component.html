@@ -1,0 +1,55 @@
+<button
+  *ngIf="visible"
+  [id]="id"
+  [class]="className || ''"
+  [ngClass]="{
+    'fusion-button': true,
+    'fusion-button-contained': stylingMode === 'contained',
+    'fusion-button-outlined': stylingMode === 'outlined',
+    'fusion-button-default': type === 'default',
+    'fusion-button-danger': type === 'danger',
+    'fusion-button-info': type === 'info',
+    'fusion-button-warning': type === 'warning',
+    'fusion-button-success': type === 'success',
+    'fusion-button-disabled': disabled,
+    'fusion-button-loading': loading,
+    }"
+  [ngStyle]="{
+    height: height,
+    'min-width': size === 'custom' ? 'min-content' : 'auto',
+    width: fullWidth ? '100%' : width, 
+  }"
+  [disabled]="disabled || loading"
+  [attr.aria-busy]="loading"
+  [attr.aria-disabled]="disabled"
+  [attr.aria-label]="text || 'Action button'"
+  (click)="onClick.emit({ component: this, event: $event })"
+  (dblclick)="onDblClick.emit({ component: this, event: $event })"
+  (mouseenter)="onHover.emit({ component: this, event: $event })"
+>
+  <ng-container *ngIf="loading; else content">
+    <fusion-loader
+      [size]="loaderOptions?.size || 'small'"
+      [mode]="loaderOptions?.mode || 'spinner'"
+      [visible]="loading"
+      [color]="loaderOptions?.color || '#464646'"
+    ></fusion-loader>
+  </ng-container>
+
+  <ng-template #content>
+    <ng-container *ngIf="customTemplate; else defaultContent">
+      <ng-container [ngTemplateOutlet]="customTemplate"></ng-container>
+    </ng-container>
+
+    <ng-template #defaultContent>
+      <div style="display: flex; align-items: center">
+        <span
+          [ngStyle]="{ width: width ? width : 'auto', }"
+          *ngIf="text"
+          class="fusion-button-text"
+          >{{ text }}</span
+        >
+      </div>
+    </ng-template>
+  </ng-template>
+</button>

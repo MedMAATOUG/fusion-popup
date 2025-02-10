@@ -1,0 +1,171 @@
+<div
+  class="fusion-popup-overlay"
+  [ngStyle]="{
+    'background-color': shadingColor,
+    'z-index': zIndex
+  }"
+></div>
+<div
+  #popup
+  cdkDrag
+  class="fusion-popup"
+  [ngClass]="[animation]"
+  [ngStyle]="{
+    width: width,
+    height: height,
+    'max-height': maxHeight ? maxHeight : 'none',
+    'min-height': minHeight ? minHeight : 'none',
+    'max-width': maxWidth ? maxWidth : 'none',
+    'min-width': minWidth ? minWidth : 'none',
+    'left.px': positionXY.x,
+    'top.px': positionXY.y,
+    'z-index': zIndex,
+    resize: resizeEnabled ? 'both' : 'none'
+  }"
+>
+  <!-- Use the templates in your buttons -->
+  <div *ngIf="showHeader" cdkDragHandle class="fusion-popup-header">
+    <div class="fusion-dynamic-header">
+      <span class="fusion-popup-title">{{ title || " " }}</span>
+
+      <div *ngIf="showCloseButton" class="fusion-toolbar-items">
+        <fusion-button
+          [stylingMode]="'outlined'"
+          [height]="30"
+          [width]="40"
+          [type]="'default'"
+          [customTemplate]="closeIcon"
+          (onClick)="close()"
+        >
+        </fusion-button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    class="fusion-popup-content fusion-scrollbar"
+    [ngClass]="{
+  'header-content-footer':  showHeader && showFooter,
+  'header-content':   showHeader && !showFooter,
+  'content-footer':   !showHeader && showFooter,
+  'content':  !showHeader && !showFooter,
+  }"
+  >
+    <ng-container *ngIf="component; else projected">
+      <ng-container
+        [ngComponentOutlet]="component"
+        [ngComponentOutletInputs]="componentInputs"
+      ></ng-container>
+    </ng-container>
+
+    <ng-template #projected>
+      <ng-container *ngIf="customTemplate; else projectedComponent">
+        <ng-container [ngTemplateOutlet]="customTemplate"></ng-container>
+      </ng-container>
+
+      <ng-template #projectedComponent>
+        <ng-content></ng-content>
+      </ng-template>
+    </ng-template>
+    <div *ngIf="loading" class="fusion-popup-loader-overlay">
+      <fusion-loader [visible]="loading"></fusion-loader>
+    </div>
+  </div>
+
+  <div *ngIf="showFooter" class="fusion-popup-footer">
+    <!-- buttons -->
+    <div class="left">
+      <ng-container *ngFor="let btn of buttons">
+        <ng-container *ngIf="btn.position && btn.position == 'left'">
+          <fusion-button
+            [id]="btn.id"
+            [stylingMode]="btn.stylingMode || 'outlined'"
+            [type]="btn?.type || 'default'"
+            [text]="btn?.text || ''"
+            [height]="btn?.height || 35"
+            [width]="btn?.width ?? 'auto'"
+            [disabled]="btn?.disabled || false"
+            [visible]="btn?.visible || true"
+            [loading]="btn?.loading || false"
+            (onClick)="
+              onButtonClick.emit({ button: $event.component, component: this })
+            "
+          >
+          </fusion-button>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div class="center">
+      <ng-container *ngFor="let btn of buttons">
+        <ng-container *ngIf="btn.position && btn.position == 'center'">
+          <fusion-button
+            [id]="btn.id"
+            [stylingMode]="btn.stylingMode || 'outlined'"
+            [type]="btn.type || 'default'"
+            [text]="btn?.text || ''"
+            [height]="btn?.height || 35"
+            [width]="btn?.width || 'auto'"
+            [disabled]="btn?.disabled || false"
+            [visible]="btn?.visible || false"
+            [loading]="btn?.loading || false"
+            [fullWidth]="btn?.fullWidth || false"
+            [loaderOptions]="
+              btn?.loaderOptions ??
+              {
+                size: 'small',
+                mode: 'spinner',
+              }
+            "
+            (onClick)="
+              onButtonClick.emit({ button: $event.component, component: this })
+            "
+          >
+          </fusion-button>
+        </ng-container>
+      </ng-container>
+    </div>
+    <div class="right">
+      <ng-container *ngFor="let btn of buttons">
+        <ng-container *ngIf="btn.position && btn.position == 'right'">
+          <fusion-button
+            [id]="btn.id"
+            [stylingMode]="btn.stylingMode || 'outlined'"
+            [type]="btn.type || 'default'"
+            [text]="btn.text || ''"
+            [height]="btn.height || 35"
+            [width]="btn.width ?? 'auto'"
+            [disabled]="btn.disabled || false"
+            [visible]="btn.visible || false"
+            [loading]="btn.loading || false"
+            (onClick)="
+              onButtonClick.emit({ button: $event.component, component: this })
+            "
+          >
+          </fusion-button>
+        </ng-container>
+      </ng-container>
+    </div>
+  </div>
+
+  <div *ngIf="resizeEnabled" class="fusion-resize-handle"></div>
+  <div class="resize-handle resize-handle-top-left"></div>
+  <div class="resize-handle resize-handle-top-right"></div>
+  <div class="resize-handle resize-handle-bottom-left"></div>
+  <div class="resize-handle resize-handle-bottom-right"></div>
+</div>
+
+<!-- templates for buttons  -->
+
+<ng-template #closeIcon>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="16"
+    height="16"
+    fill="currentColor"
+    viewBox="0 0 16 16"
+  >
+    <path
+      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z"
+    />
+  </svg>
+</ng-template>
